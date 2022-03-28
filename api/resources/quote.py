@@ -21,7 +21,7 @@ class QuoteResource(Resource):
             return [quote.to_dict() for quote in quotes], 200  # Возвращаем все цитаты автора
 
         quote = QuoteModel.query.get(quote_id)
-        if quote is not None:
+        if quote:
             return quote.to_dict(), 200
         return {"Error": "Quote not found"}, 404
 
@@ -51,7 +51,7 @@ class QuoteResource(Resource):
             return {"Error": f"Quote id={quote_id} not found"}, 404
 
         parser = reqparse.RequestParser()
-        parser.add_argument("text")
+        parser.add_argument("text", required=True)
         quote_data = parser.parse_args()
         quote = QuoteModel(author, quote_data["text"])
         db.session.add(quote)
