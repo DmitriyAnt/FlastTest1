@@ -29,15 +29,14 @@ class AuthorResource(Resource):
         if author is None:
             return {"Error": f"Author id={author_id} not found"}, 404
 
-        # quotes = quotes.filter(QuoteModel.author.has(name=params.get('author')))
-        quote = QuoteModel.query.filter(QuoteModel.author.has(name=author.name)).all()
-        if quote:
+        quotes = QuoteModel.query.filter(QuoteModel.author.has(name=author.name)).all()
+        for quote in quotes:
             db.session.delete(quote)  # delete all not work yet
 
         db.session.delete(author)
         db.session.commit()
 
-        return f"Author {quote.id} deleted with quotes.", 200
+        return f"Author {author_id} deleted with quotes.", 200
 
 
 class AuthorListResource(Resource):

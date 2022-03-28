@@ -4,17 +4,13 @@ from api.models.quote import QuoteModel
 
 
 class QuoteResource(Resource):
-    def get(self, author_id=None, quote_id=None):
+    def get(self, author_id, quote_id):
         """
         Обрабатываем GET запросы
         :param author_id: id автора
         :param quote_id: id цитаты
         :return: http-response(json, статус)
         """
-        if author_id is None and quote_id is None:  # Если запрос приходит по url: /quotes
-            quotes = QuoteModel.query.all()
-            return [quote.to_dict() for quote in quotes]  # Возвращаем ВСЕ цитаты
-
         author = AuthorModel.query.get(author_id)
         if quote_id is None:  # Если запрос приходит по url: /authors/<int:author_id>/quotes
             quotes = author.quotes.all()
@@ -71,3 +67,11 @@ class QuoteResource(Resource):
         db.session.delete(quote)
         db.session.commit()
         return f"Quote {quote.id} deleted.", 200
+
+
+class QuoteListResource(Resource):
+    def get(self):
+        quotes = QuoteModel.query.all()
+        return [quote.to_dict() for quote in quotes]  # Возвращаем ВСЕ цитаты
+
+
