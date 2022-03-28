@@ -31,7 +31,7 @@ class AuthorResource(Resource):
 
         quotes = QuoteModel.query.filter(QuoteModel.author.has(name=author.name)).all()
         for quote in quotes:
-            db.session.delete(quote)  # delete all not work yet
+            db.session.delete(quote)
 
         db.session.delete(author)
         db.session.commit()
