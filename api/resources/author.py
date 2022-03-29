@@ -43,8 +43,8 @@ class AuthorResource(Resource):
 class AuthorListResource(Resource):
     def get(self):
         authors = AuthorModel.query.all()
-        authors_list = [author.to_dict() for author in authors]
-        return authors_schema.dump(authors_list), 200
+        # authors_list = [author.to_dict() for author in authors]
+        return authors_schema.dump(authors), 200
 
     def post(self):
         parser = reqparse.RequestParser()
