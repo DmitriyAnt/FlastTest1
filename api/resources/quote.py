@@ -22,8 +22,9 @@ class QuoteResource(Resource):
 
         parser = reqparse.RequestParser()
         parser.add_argument("text", required=True)
+        parser.add_argument("rate")
         quote_data = parser.parse_args()
-        quote = QuoteModel(author, quote_data["text"])
+        quote = QuoteModel(author, quote_data["text"], quote_data["rate"])
         db.session.add(quote)
         db.session.commit()
 
@@ -63,6 +64,7 @@ class QuoteListResource(Resource):
     def post(self, author_id):
         parser = reqparse.RequestParser()
         parser.add_argument("text", required=True)
+        parser.add_argument("rate")
         quote_data = parser.parse_args()
 
         print(f"{quote_data=}")
@@ -71,7 +73,7 @@ class QuoteListResource(Resource):
         if author is None:
             return {"Error": f"Author id={author_id} not found"}, 404
 
-        quote = QuoteModel(author, quote_data["text"])
+        quote = QuoteModel(author, quote_data["text"], quote_data["rate"])
         db.session.add(quote)
         db.session.commit()
         return quote_schema.dump(quote), 201
