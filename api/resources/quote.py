@@ -5,12 +5,6 @@ from api.models.quote import QuoteModel
 
 class QuoteResource(Resource):
     def get(self, author_id, quote_id):
-        """
-        Обрабатываем GET запросы
-        :param author_id: id автора
-        :param quote_id: id цитаты
-        :return: http-response(json, статус)
-        """
         quote = QuoteModel.query.get(quote_id)
         if quote:
             return quote.to_dict(), 200
@@ -50,26 +44,29 @@ class QuoteResource(Resource):
 
 
 class QuoteListResource(Resource):
-    def get(self, author_id):
+    def get(self, author_id=None):
         if author_id is None:
             quotes = QuoteModel.query.all()
-            return [quote.to_dict() for quote in quotes]  # Возвращаем ВСЕ цитаты
+            if quotes is None:
+                return {"Error": f"Quotes not found"}, 404
+            return [quote.to_dict() for quote in quotes]
 
         author = AuthorModel.query.get(author_id)
         if author is None:
             return {"Error": f"Author id={author_id} not found"}, 404
 
         quotes = author.quotes.all()
+        if quotes is None:
+            return {"Error": f"Quotes not found"}, 404
         return [quote.to_dict() for quote in quotes], 200  # Возвращаем все цитаты автора
-
-
 
     def post(self, author_id):
         parser = reqparse.RequestParser()
         parser.add_argument("text", required=True)
         quote_data = parser.parse_args()
-        # TODO: раскомментируйте строку ниже, чтобы посмотреть quote_data
-        #   print(f"{quote_data=}")
+
+        print(f"{quote_data=}")
+
         author = AuthorModel.query.get(author_id)
         if author is None:
             return {"Error": f"Author id={author_id} not found"}, 404
