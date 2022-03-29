@@ -4,12 +4,10 @@ from api.resources.author import AuthorResource, AuthorListResource
 from config import Config
 
 api.add_resource(QuoteResource,
-                 '/authors/<int:author_id>/quotes/<int:quote_id>'
-                 )  # <-- requests
+                 '/authors/<int:author_id>/quotes/<int:quote_id>')  # <-- requests
 api.add_resource(QuoteListResource,
                  '/authors/<int:author_id>/quotes',
-                 '/quotes'
-                 )  # <-- requests
+                 '/quotes')  # <-- requests
 api.add_resource(AuthorResource,
                  '/authors/<int:author_id>')  # <-- requests
 api.add_resource(AuthorListResource,

@@ -1,17 +1,17 @@
 from api import Resource, reqparse, db
 from api.models.author import AuthorModel
 from api.models.quote import QuoteModel
+from api.schemas.quotes import quote_schema, quotes_schema
 
 
 class QuoteResource(Resource):
     def get(self, author_id, quote_id):
         quote = QuoteModel.query.get(quote_id)
         if quote:
-            return quote.to_dict(), 200
+            return quote_schema.dump(quote), 200
         return {"Error": "Quote not found"}, 404
 
     def put(self, author_id, quote_id):
-
         author = AuthorModel.query.get(author_id)
         if author is None:
             return {"Error": f"Author id={author_id} not found"}, 404
@@ -27,7 +27,7 @@ class QuoteResource(Resource):
         db.session.add(quote)
         db.session.commit()
 
-        return quote.to_dict(), 200
+        return quote_schema.dump(quote), 200
 
     def delete(self, author_id, quote_id):
         author = AuthorModel.query.get(author_id)
@@ -49,7 +49,7 @@ class QuoteListResource(Resource):
             quotes = QuoteModel.query.all()
             if quotes is None:
                 return {"Error": f"Quotes not found"}, 404
-            return [quote.to_dict() for quote in quotes]
+            return quotes_schema.dump(quotes), 200  #[quote.to_dict() for quote in quotes]
 
         author = AuthorModel.query.get(author_id)
         if author is None:
@@ -58,7 +58,7 @@ class QuoteListResource(Resource):
         quotes = author.quotes.all()
         if quotes is None:
             return {"Error": f"Quotes not found"}, 404
-        return [quote.to_dict() for quote in quotes], 200  # Возвращаем все цитаты автора
+        return quotes_schema.dump(quotes), 200  #[quote.to_dict() for quote in quotes]  # Возвращаем все цитаты автора
 
     def post(self, author_id):
         parser = reqparse.RequestParser()
@@ -74,6 +74,4 @@ class QuoteListResource(Resource):
         quote = QuoteModel(author, quote_data["text"])
         db.session.add(quote)
         db.session.commit()
-        return quote.to_dict(), 201
-
-
+        return quote_schema.dump(quote), 201

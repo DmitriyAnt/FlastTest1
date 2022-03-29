@@ -1,6 +1,7 @@
 from api import Resource, reqparse, db
 from api.models.author import AuthorModel
 from api.models.quote import QuoteModel
+from api.schemas.author import author_schema, authors_schema
 
 
 #
@@ -10,7 +11,7 @@ class AuthorResource(Resource):
         if author is None:
             return f"Author id={author_id} not found", 404
 
-        return author.to_dict(), 200
+        return author_schema.dump(author), 200
 
 
     def put(self, author_id):
@@ -22,7 +23,7 @@ class AuthorResource(Resource):
             return {"Error": f"Author id={author_id} not found"}, 404
         author.name = author_data["name"]
         db.session.commit()
-        return author.to_dict(), 200
+        return author_schema.dump(author), 200
 
     def delete(self, author_id):
         author = AuthorModel.query.get(author_id)
@@ -43,7 +44,7 @@ class AuthorListResource(Resource):
     def get(self):
         authors = AuthorModel.query.all()
         authors_list = [author.to_dict() for author in authors]
-        return authors_list, 200
+        return authors_schema.dump(authors_list), 200
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -52,4 +53,4 @@ class AuthorListResource(Resource):
         author = AuthorModel(author_data["name"])
         db.session.add(author)
         db.session.commit()
-        return author.to_dict(), 201
+        return author_schema.dump(author), 201
