@@ -1,4 +1,6 @@
-from api import Resource, reqparse, db
+from flask import g
+
+from api import Resource, reqparse, db, auth
 from api.models.author import AuthorModel
 from api.models.quote import QuoteModel
 from api.schemas.quotes import quote_schema, quotes_schema
@@ -11,6 +13,7 @@ class QuoteResource(Resource):
             return quote_schema.dump(quote), 200
         return {"Error": "Quote not found"}, 404
 
+    @auth.login_required
     def put(self, author_id, quote_id):
         author = AuthorModel.query.get(author_id)
         if author is None:
@@ -30,6 +33,7 @@ class QuoteResource(Resource):
 
         return quote_schema.dump(quote), 200
 
+    @auth.login_required
     def delete(self, author_id, quote_id):
         author = AuthorModel.query.get(author_id)
         if author is None:
@@ -61,7 +65,9 @@ class QuoteListResource(Resource):
             return {"Error": f"Quotes not found"}, 404
         return quotes_schema.dump(quotes), 200  #[quote.to_dict() for quote in quotes]  # Возвращаем все цитаты автора
 
+    @auth.login_required
     def post(self, author_id):
+        print(g.user.username)
         parser = reqparse.RequestParser()
         parser.add_argument("text", required=True)
         parser.add_argument("rate")

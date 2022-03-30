@@ -7,24 +7,22 @@ class UserResource(Resource):
     def get(self, user_id):
         user = UserModel.query.get(user_id)
         if user is None:
-            return f"User id={user_id} not found", 404
+            return {"Error": f"User id={user_id} not found"}, 404
 
         return user_schema.dump(user), 200
-
-
 
     def put(self, user_id):
         parser = reqparse.RequestParser()
         parser.add_argument("username", required=True)
         parser.add_argument("password", required=True)
-        author_data = parser.parse_args()
-        author = UserModel.query.get(user_id)
-        if author is None:
+        user_data = parser.parse_args()
+        user = UserModel.query.get(user_id)
+        if user is None:
             return {"Error": f"User id={user_id} not found"}, 404
-        author.name = author_data["username"]
-        author.surname = author_data["password"]
+        user.name = user_data["username"]
+        user.surname = user_data["password"]
         db.session.commit()
-        return user_schema.dump(author), 200
+        return user_schema.dump(user), 200
 
     def delete(self, user_id):
         user = UserModel.query.get(user_id)
@@ -34,20 +32,20 @@ class UserResource(Resource):
         db.session.delete(user)
         db.session.commit()
 
-        return f"User {user_id} deleted with quotes.", 200
+        return {"Error": "User {user_id} deleted with quotes."}, 200
+
 
 class UsersListResource(Resource):
     def get(self):
-        authors = UserModel.query.all()
-        return users_schema.dump(authors), 200
+        user = UserModel.query.all()
+        return users_schema.dump(user), 200
 
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("username", required=True)
         parser.add_argument("password", required=True)
         user_data = parser.parse_args()
-        user = UserModel(user_data["username"], user_data["password"])
+        user = UserModel(**user_data)
         db.session.add(user)
         db.session.commit()
         return user_schema.dump(user), 201
-

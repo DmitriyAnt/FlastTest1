@@ -1,19 +1,18 @@
-from api import Resource, reqparse, db
+from api import Resource, reqparse, db, auth
 from api.models.author import AuthorModel
 from api.models.quote import QuoteModel
 from api.schemas.author import author_schema, authors_schema
 
 
-#
 class AuthorResource(Resource):
     def get(self, author_id):
         author = AuthorModel.query.get(author_id)
         if author is None:
-            return f"Author id={author_id} not found", 404
+            return {"Error": "Author id={author_id} not found"}, 404
 
         return author_schema.dump(author), 200
 
-
+    @auth.login_required
     def put(self, author_id):
         parser = reqparse.RequestParser()
         parser.add_argument("name", required=True)
@@ -27,6 +26,7 @@ class AuthorResource(Resource):
         db.session.commit()
         return author_schema.dump(author), 200
 
+    @auth.login_required
     def delete(self, author_id):
         author = AuthorModel.query.get(author_id)
         if author is None:
@@ -39,7 +39,7 @@ class AuthorResource(Resource):
         db.session.delete(author)
         db.session.commit()
 
-        return f"Author {author_id} deleted with quotes.", 200
+        return {"Error": "Author {author_id} deleted with quotes."}, 200
 
 
 class AuthorListResource(Resource):
@@ -48,6 +48,7 @@ class AuthorListResource(Resource):
         # authors_list = [author.to_dict() for author in authors]
         return authors_schema.dump(authors), 200
 
+    @auth.login_required
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("name", required=True)
