@@ -14,6 +14,7 @@ migrate = Migrate(app, db)
 ma = Marshmallow(app)
 auth = HTTPBasicAuth()
 
+# JWT lib to jwt token
 
 @auth.verify_password
 def verify_password(username_or_token, password):
