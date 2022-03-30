@@ -1,7 +1,7 @@
 from api import api, app
 from api.resources.quote import QuoteResource, QuoteListResource
 from api.resources.author import AuthorResource, AuthorListResource
-from api.resources.user import UserResource
+from api.resources.user import UserResource, UsersListResource
 from config import Config
 
 api.add_resource(QuoteResource,
@@ -14,7 +14,8 @@ api.add_resource(AuthorResource,
 api.add_resource(AuthorListResource,
                  '/authors')  # <-- requests
 api.add_resource(UserResource,
-                 '/users/<int:user_id>',
+                 '/users/<int:user_id>')  # <-- requests
+api.add_resource(UsersListResource,
                  '/users')  # <-- requests
 
 
