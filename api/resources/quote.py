@@ -27,8 +27,8 @@ class QuoteResource(Resource):
         parser.add_argument("text", required=True)
         parser.add_argument("rate")
         quote_data = parser.parse_args()
-        quote = QuoteModel(author, quote_data["text"], quote_data["rate"])
-        db.session.add(quote)
+        quote.text = quote_data["text"]
+        quote.data = quote_data.get("rate", quote.rate)
         db.session.commit()
 
         return quote_schema.dump(quote), 200
